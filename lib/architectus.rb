@@ -2,6 +2,8 @@
 
 require 'thor'
 require 'pastel'
+require 'tty-spinner'
+require 'tty-box'
 
 # ---------------------------------------------------------------------------------
 
