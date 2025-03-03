@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 
 require_relative '../lib/architectus'
-Architectus::CLI.run
+Architectus::CLI.start(ARGV)
