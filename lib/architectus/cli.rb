@@ -3,9 +3,9 @@ module Architectus
   class CLI < Thor
     include Thor::Actions
 
-    # Method to check if 'figlet' and 'lolcat' is installed and display the banner if so
+    # Method to check if "figlet" and "lolcat" is installed and display the banner if so
     def self.show_banner
-      # Check if 'figlet' and 'loclat' is available on the system
+      # Check if "figlet" and "loclat" is available on the system
       if system("which figlet > /dev/null 2>&1") && system("which lolcat > /dev/null 2>&1")
         system("figlet Architectus | lolcat")
       else
@@ -24,22 +24,44 @@ module Architectus
 
     # commands ------------------------------------------------------------------------------------------------
 
-    desc 'version', 'Display Architectus version'
+    desc "version", "Display Architectus version"
     def version
-      self.class.show_banner
       pastel = Pastel.new
       puts pastel.cyan.bold("Architectus v#{Architectus::VERSION}")
     end
 
-    desc 'new PROJECT_NAME', 'Create a new project with the specified structure'
-    method_option :language, aliases: '-l', type: :string, default: 'ruby', desc: 'Programming language to scaffold'
+    desc "new PROJECT_NAME", "Create a new project with the specified structure"
+    method_option :language, aliases: "-l", type: :string, default: "ruby", desc: "Programming language to scaffold"
     def new(project_name)
       self.class.show_banner
 
       pastel = Pastel.new
+      prompt = TTY::Prompt.new
       spinner = TTY::Spinner.new("[:spinner] Creating #{pastel.cyan(project_name)} project... :title", format: :dots)
 
       print_welcome_box(project_name, options[:language])
+
+
+      # Ask user where to save the project
+      choices = {
+        "Current Directory (#{Dir.pwd}/#{options[:language]})" => Dir.pwd + "/" + options[:language],
+        "Home Directory (#{Dir.home}/#{options[:language]})" => Dir.home + "/" + options[:language],
+        "Custom Path" => :custom,
+        "Exit" => :exit
+      }
+
+      selected_path = prompt.select("Where do you want to save your project?", choices)
+      
+      if selected_path == :exit
+        puts pastel.yellow("Exiting... No project was created.")
+        exit(0)
+      end
+
+      if selected_path == :custom
+        selected_path = prompt.ask("Enter the full path:", default: Dir.pwd)
+      end
+      
+      project_path = File.join(selected_path, project_name)
 
       # create project
       begin
@@ -47,6 +69,8 @@ module Architectus
 
         spinner.update(title: "Getting the appropriate language scaffolder")
         scaffolder = get_scaffolder(options[:language])
+
+        scaffolder.create(project_path)
         
 
         # Print success message
@@ -67,7 +91,7 @@ module Architectus
       
     end
 
-    desc 'list', 'List all supported programming languages'
+    desc "list", "List all supported programming languages"
     def list
       self.class.show_banner
 
@@ -82,7 +106,7 @@ module Architectus
 
     def get_scaffolder(language)
       case language.downcase
-      when 'ruby'
+      when "ruby"
         Architectus::Languages::Ruby.new
       else
         raise "Unsupported language: #{language}"
@@ -98,7 +122,7 @@ module Architectus
         border: :thick,
         align: :center,
         padding: [1, 2],
-        title: { top_left: ' Architectus ', bottom_right: " v#{Architectus::VERSION} " },
+        title: { top_left: " Architectus ", bottom_right: " v#{Architectus::VERSION} " },
         enable_color: true,
         style: {
           border: {
