@@ -70,16 +70,17 @@ module Architectus
 
           spinner.update(title: "Getting the appropriate language scaffolder")
           scaffolder = get_scaffolder(options[:language])
+          sleep(1.5)
 
           scaffolder.create(project_path)
           
           # Print success message
           puts ""
           puts pastel.green.bold("✅ Project created successfully!")
-          puts pastel.cyan("Your #{options[:language].capitalize} project is ready in ./#{project_name}")
+          puts pastel.cyan("Your #{options[:language].capitalize} project is ready in #{project_name}")
           puts ""
           puts "Next steps:"
-          puts pastel.yellow("  cd #{project_name}")
+          puts pastel.yellow("  cd into #{project_name}")
           scaffolder.next_steps.each do |step|
             puts pastel.yellow("  #{step}")
           end
