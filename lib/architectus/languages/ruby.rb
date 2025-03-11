@@ -26,6 +26,9 @@ module Architectus
         # Generate template-based files
         puts ""
         generate_templates(project_path)
+
+        # Create the executable file in the bin directory
+        create_executable(project_path)
       end
 
       def next_steps
@@ -50,6 +53,13 @@ module Architectus
         ].each do |template_name, destination|
           copy_template(template_name, destination)
         end
+      end
+
+      def create_executable(project_path)
+        bin_file_path = "#{project_path}/bin/#{@project_name.downcase}"
+        copy_template("start.erb", bin_file_path)
+         # Make the bin file executable
+        FileUtils.chmod("+x", bin_file_path)
       end
 
       def copy_template(template_name, destination)
