@@ -50,45 +50,48 @@ module Architectus
         "Exit" => :exit
       }
 
-      selected_path = prompt.select("Where do you want to save your project?", choices)
-      
-      if selected_path == :exit
-        puts pastel.yellow("Exiting... No project was created.")
-        exit(0)
-      end
-
-      if selected_path == :custom
-        selected_path = prompt.ask("Enter the full path:", default: Dir.pwd)
-      end
-      
-      project_path = File.join(selected_path, project_name)
-
-      # create project
       begin
-        spinner.auto_spin
-
-        spinner.update(title: "Getting the appropriate language scaffolder")
-        scaffolder = get_scaffolder(options[:language])
-
-        scaffolder.create(project_path)
+        selected_path = prompt.select("Where do you want to save your project?", choices)
         
-
-        # Print success message
-        puts ""
-        puts pastel.green.bold("✅ Project created successfully!")
-        puts pastel.cyan("Your #{options[:language].capitalize} project is ready in ./#{project_name}")
-        puts ""
-        puts "Next steps:"
-        puts pastel.yellow("  cd #{project_name}")
-        scaffolder.next_steps.each do |step|
-          puts pastel.yellow("  #{step}")
+        if selected_path == :exit
+          puts pastel.yellow("Exiting... No project was created.")
+          exit(0)
         end
-      rescue StandardError => e
-        puts pastel.red("Failed to create project: #{e.message}")
-        exit(1)
-      end
-      
-      
+
+        if selected_path == :custom
+          selected_path = prompt.ask("Enter the full path:", default: Dir.pwd)
+        end
+        
+        project_path = File.join(selected_path, project_name)
+
+        # create project
+        begin
+          spinner.auto_spin
+
+          spinner.update(title: "Getting the appropriate language scaffolder")
+          scaffolder = get_scaffolder(options[:language])
+
+          scaffolder.create(project_path)
+          
+          # Print success message
+          puts ""
+          puts pastel.green.bold("✅ Project created successfully!")
+          puts pastel.cyan("Your #{options[:language].capitalize} project is ready in ./#{project_name}")
+          puts ""
+          puts "Next steps:"
+          puts pastel.yellow("  cd #{project_name}")
+          scaffolder.next_steps.each do |step|
+            puts pastel.yellow("  #{step}")
+          end
+        rescue StandardError => e
+          puts pastel.red("Failed to create project: #{e.message}")
+          exit(1)
+        end
+
+      rescue Interrupt
+        puts pastel.yellow("\nExiting gracefully...")
+        exit(0)
+      end      
     end
 
     desc "list", "List all supported programming languages"
