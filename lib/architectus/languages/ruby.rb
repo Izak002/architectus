@@ -49,6 +49,7 @@ module Architectus
           ["README.md.erb", "#{project_path}/README.md"],
           ["gitignore.erb", "#{project_path}/.gitignore"],
           ["main.rb.erb", "#{project_path}/lib/main.rb"],
+          ["start.erb", "#{project_path}/bin/#{@project_name.downcase}"],
           ["spec_helper.rb.erb", "#{project_path}/spec/spec_helper.rb"]
         ].each do |template_name, destination|
           copy_template(template_name, destination)
@@ -57,7 +58,6 @@ module Architectus
 
       def create_executable(project_path)
         bin_file_path = "#{project_path}/bin/#{@project_name.downcase}"
-        copy_template("start.erb", bin_file_path)
          # Make the bin file executable
         FileUtils.chmod("+x", bin_file_path)
       end

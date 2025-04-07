@@ -77,7 +77,7 @@ module Architectus
           # Print success message
           puts ""
           puts pastel.green.bold("✅ Project created successfully!")
-          puts pastel.cyan("Your #{options[:language].capitalize} project is ready in #{project_name}")
+          puts pastel.cyan("Your #{get_language_with_color(options[:language])} project is ready in #{project_name}")
           puts ""
           puts "Next steps:"
           puts pastel.yellow("  cd into #{project_name}")
@@ -101,7 +101,7 @@ module Architectus
 
       pastel = Pastel.new
       puts pastel.cyan.bold("Supported Languages:")
-      puts pastel.green("  • Ruby")
+      puts get_language_with_color("ruby")
       puts ""
       puts pastel.yellow("More languages coming soon!")
     end
@@ -114,6 +114,21 @@ module Architectus
         Architectus::Languages::Ruby.new
       else
         raise "Unsupported language: #{language}"
+      end
+    end
+
+    # Helper method to get language name with appropriate color
+    def get_language_with_color(language)
+      pastel = Pastel.new
+      
+      case language.downcase
+      when "ruby"
+        pastel.bright_red.bold("Ruby")
+      when "python"
+        pastel.bright_blue.bold("Python")
+      else
+        # Default color for unsupported languages
+        pastel.white.bold(language.capitalize)
       end
     end
 
@@ -135,7 +150,7 @@ module Architectus
         }
       ) do
         "Creating #{pastel.bright_white.bold(project_name)}\n" +
-        "#{pastel.bright_white("with")} #{pastel.bright_red.bold(language.capitalize)} #{pastel.bright_white("structure")}"
+        "#{pastel.bright_white("with")} #{get_language_with_color(language)} #{pastel.bright_white("structure")}"
       end
       
       puts box
